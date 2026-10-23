@@ -27,16 +27,17 @@ body {
   line-height: 1.5;
 }
 .shell { max-width: 1280px; margin: 0 auto; padding: 1.5rem; }
+/* The form pane grows with its content (e.g. a widened textarea) and pushes the
+   preview pane along; once the preview can no longer fit beside it, it wraps below. */
 main {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 1.75rem;
-  align-items: start;
+  align-items: flex-start;
 }
-@media (max-width: 900px) {
-  .shell { padding: 1rem; }
-  main { grid-template-columns: 1fr; }
-}
+main > .pane:first-child { flex: 1 1 32rem; min-width: auto; max-width: 100%; }
+main > .pane:last-child { flex: 1 1 26rem; min-width: 0; }
+@media (max-width: 900px) { .shell { padding: 1rem; } }
 
 h1 {
   display: flex;
@@ -83,6 +84,7 @@ legend small { font-weight: 400; color: var(--muted); }
 
 input, textarea, select {
   width: 100%;
+  max-width: 100%;
   font: inherit;
   color: var(--ink);
   padding: 0.5rem 0.75rem;
