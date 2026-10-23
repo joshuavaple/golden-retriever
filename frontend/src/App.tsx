@@ -26,8 +26,8 @@ export function App() {
   };
 
   return (
-    <main>
-      <div class="pane">
+    <div class="shell">
+      <header>
         <h1>
           <svg class="paw" viewBox="0 0 32 32" aria-hidden="true">
             <ellipse cx="6.5" cy="14" rx="3" ry="4" />
@@ -38,48 +38,52 @@ export function App() {
           </svg>
           golden-retriever
         </h1>
-        <fieldset>
-          <legend>inputs <small>(required; at least one key with a value)</small></legend>
-          <KeyValueRows label="input" rows={form.inputs} onChange={(inputs) => patch({ inputs })} />
-          <Errors items={grouped.inputs} />
-        </fieldset>
+      </header>
+      <main>
+        <div class="pane">
+          <fieldset>
+            <legend>inputs <small>(required; at least one key with a value)</small></legend>
+            <KeyValueRows label="input" rows={form.inputs} onChange={(inputs) => patch({ inputs })} />
+            <Errors items={grouped.inputs} />
+          </fieldset>
 
-        <fieldset>
-          <legend>expectations</legend>
-          <h4>expected_facts</h4>
-          <p class="help">Checks what the answer says. List only facts strictly required; they can be derived conclusions that appear in no single passage.</p>
-          <StringListRows label="fact" items={form.expected_facts} onChange={(expected_facts) => patch({ expected_facts })} />
-          <h4>expected_response</h4>
-          <textarea aria-label="expected_response" rows={3} value={form.expected_response} onInput={(e) => patch({ expected_response: e.currentTarget.value })} />
-          <h4>guidelines</h4>
-          <StringListRows label="guideline" items={form.guidelines} onChange={(guidelines) => patch({ guidelines })} />
-          <h4>expected_retrieved_context</h4>
-          <p class="help">Checks what the retriever returned, not what the answer says.</p>
-          <ContextItems items={form.expected_retrieved_context} onChange={(expected_retrieved_context) => patch({ expected_retrieved_context })} />
-          <Errors items={grouped.expectations} />
-        </fieldset>
+          <fieldset>
+            <legend>expectations</legend>
+            <h4>expected_facts</h4>
+            <p class="help">Checks what the answer says. List only facts strictly required; they can be derived conclusions that appear in no single passage.</p>
+            <StringListRows label="fact" items={form.expected_facts} onChange={(expected_facts) => patch({ expected_facts })} />
+            <h4>expected_response</h4>
+            <textarea aria-label="expected_response" rows={3} value={form.expected_response} onInput={(e) => patch({ expected_response: e.currentTarget.value })} />
+            <h4>guidelines</h4>
+            <StringListRows label="guideline" items={form.guidelines} onChange={(guidelines) => patch({ guidelines })} />
+            <h4>expected_retrieved_context</h4>
+            <p class="help">Checks what the retriever returned, not what the answer says.</p>
+            <ContextItems items={form.expected_retrieved_context} onChange={(expected_retrieved_context) => patch({ expected_retrieved_context })} />
+            <Errors items={grouped.expectations} />
+          </fieldset>
 
-        <fieldset>
-          <legend>tags</legend>
-          <KeyValueRows label="tag" rows={form.tags} onChange={(tags) => patch({ tags })} />
-          <Errors items={grouped.tags} />
-        </fieldset>
+          <fieldset>
+            <legend>tags</legend>
+            <KeyValueRows label="tag" rows={form.tags} onChange={(tags) => patch({ tags })} />
+            <Errors items={grouped.tags} />
+          </fieldset>
 
-        <fieldset>
-          <legend>source</legend>
-          <SourceSelect source={form.source} onChange={(source) => patch({ source })} />
-          <Errors items={grouped.source} />
-        </fieldset>
+          <fieldset>
+            <legend>source</legend>
+            <SourceSelect source={form.source} onChange={(source) => patch({ source })} />
+            <Errors items={grouped.source} />
+          </fieldset>
 
-        <Errors items={grouped.record} />
-        <Warnings items={warnings} />
-        <button type="button" class="primary" disabled={errors.length > 0} onClick={add}>Add record</button>
-      </div>
+          <Errors items={grouped.record} />
+          <Warnings items={warnings} />
+          <button type="button" class="primary" disabled={errors.length > 0} onClick={add}>Add record</button>
+        </div>
 
-      <div class="pane">
-        <Preview title="Current record" json={record} filename="record.json" />
-        <Preview title={`Dataset (${dataset.length})`} json={dataset} filename="dataset.json" />
-      </div>
-    </main>
+        <div class="pane">
+          <Preview title="Current record" json={record} filename="record.json" />
+          <Preview title={`Dataset (${dataset.length})`} json={dataset} filename="dataset.json" />
+        </div>
+      </main>
+    </div>
   );
 }

@@ -7,8 +7,8 @@
   --gold: #e0a83c;
   --gold-strong: #8a5a0c;
   --gold-soft: #f7eac8;
-  --code-bg: #2e2218;
-  --code-ink: #f3e6ce;
+  --code-bg: #f6ecd2;
+  --code-ink: #3a2b1c;
   --err: #a63d2a;
   --err-bg: #fbe6df;
   --warn: #7a4e0e;
@@ -16,26 +16,6 @@
   --btn-ink: #2a1d0e;
   --shadow: 0 1px 2px rgb(90 60 20 / 0.06), 0 4px 14px rgb(90 60 20 / 0.05);
   color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #241b13;
-    --surface: #2e241a;
-    --ink: #f0e3cb;
-    --muted: #b7a27f;
-    --line: #4a3b2a;
-    --gold: #d9a74f;
-    --gold-strong: #e3b565;
-    --gold-soft: #4a3a22;
-    --code-bg: #1a130d;
-    --code-ink: #f0e3cb;
-    --err: #f0a08c;
-    --err-bg: #4a2a22;
-    --warn: #e8c37a;
-    --warn-bg: #4a3a1c;
-    --shadow: 0 1px 2px rgb(0 0 0 / 0.3);
-    color-scheme: dark;
-  }
 }
 
 * { box-sizing: border-box; }
@@ -46,15 +26,17 @@ body {
   font-family: 'Nunito', ui-rounded, 'Segoe UI', system-ui, sans-serif;
   line-height: 1.5;
 }
+.shell { max-width: 1280px; margin: 0 auto; padding: 1.5rem; }
 main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1.75rem;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 1.5rem;
+  align-items: start;
 }
-@media (max-width: 900px) { main { grid-template-columns: 1fr; padding: 1rem; } }
+@media (max-width: 900px) {
+  .shell { padding: 1rem; }
+  main { grid-template-columns: 1fr; }
+}
 
 h1 {
   display: flex;
@@ -79,7 +61,9 @@ fieldset {
   border-radius: 22px;
   box-shadow: var(--shadow);
 }
-legend { padding: 0 0.5rem; font-weight: 800; font-size: 1.05rem; }
+/* float lifts the legend off the border so the heading sits inside the box */
+legend { float: left; width: 100%; padding: 0; margin: 0 0 0.6rem; font-weight: 800; font-size: 1.05rem; }
+legend + * { clear: both; }
 legend small { font-weight: 400; color: var(--muted); }
 
 .rows { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start; }
@@ -151,13 +135,20 @@ button:hover { background: color-mix(in srgb, var(--gold) 38%, var(--gold-soft))
 
 .bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
 .bar span { display: flex; gap: 0.4rem; }
-section { margin-bottom: 1.25rem; }
+section {
+  margin: 0 0 1.1rem;
+  padding: 1rem 1.15rem 1.15rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+}
 pre {
   margin: 0;
   padding: 1rem 1.15rem;
   color: var(--code-ink);
   background: var(--code-bg);
-  border-radius: 18px;
+  border-radius: 14px;
   overflow: auto;
   max-height: 40vh;
 }
