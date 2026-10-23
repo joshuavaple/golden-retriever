@@ -26,7 +26,7 @@ body {
   font-family: 'Nunito', ui-rounded, 'Segoe UI', system-ui, sans-serif;
   line-height: 1.5;
 }
-.shell { max-width: 1280px; margin: 0 auto; padding: 1.5rem; }
+.shell { padding: 1.25rem 0.75rem; }
 /* The form pane grows with its content (e.g. a widened textarea) and pushes the
    preview pane along; once the preview can no longer fit beside it, it wraps below. */
 main {
@@ -38,7 +38,6 @@ main {
 main > .pane-pdf { flex: 1 1 26rem; min-width: 0; max-width: 100%; }
 main > .pane-form { flex: 1 1 32rem; min-width: auto; max-width: 100%; }
 main > .pane-preview { flex: 1 1 26rem; min-width: 0; }
-@media (max-width: 900px) { .shell { padding: 1rem; } }
 
 h1 {
   display: flex;
