@@ -9,6 +9,7 @@ import { ContextItems } from './components/ContextItems';
 import { SourceSelect } from './components/SourceSelect';
 import { Preview } from './components/Preview';
 import { Errors, Warnings } from './components/Messages';
+import { Help } from './components/Help';
 
 export function App() {
   const [form, setForm] = useState<FormState>(emptyForm);
@@ -43,33 +44,39 @@ export function App() {
         <div class="pane">
           <fieldset>
             <legend>inputs <small>(required; at least one key with a value)</small></legend>
+            <Help id="inputs" />
             <KeyValueRows label="input" rows={form.inputs} onChange={(inputs) => patch({ inputs })} />
             <Errors items={grouped.inputs} />
           </fieldset>
 
           <fieldset>
             <legend>expectations</legend>
+            <Help id="expectations" />
             <h4>expected_facts</h4>
-            <p class="help">Checks what the answer says. List only facts strictly required; they can be derived conclusions that appear in no single passage.</p>
+            <Help id="expected_facts" />
             <StringListRows label="fact" items={form.expected_facts} onChange={(expected_facts) => patch({ expected_facts })} />
             <h4>expected_response</h4>
+            <Help id="expected_response" />
             <textarea aria-label="expected_response" rows={3} value={form.expected_response} onInput={(e) => patch({ expected_response: e.currentTarget.value })} />
             <h4>guidelines</h4>
+            <Help id="guidelines" />
             <StringListRows label="guideline" items={form.guidelines} onChange={(guidelines) => patch({ guidelines })} />
             <h4>expected_retrieved_context</h4>
-            <p class="help">Checks what the retriever returned, not what the answer says.</p>
+            <Help id="expected_retrieved_context" />
             <ContextItems items={form.expected_retrieved_context} onChange={(expected_retrieved_context) => patch({ expected_retrieved_context })} />
             <Errors items={grouped.expectations} />
           </fieldset>
 
           <fieldset>
             <legend>tags</legend>
+            <Help id="tags" />
             <KeyValueRows label="tag" rows={form.tags} onChange={(tags) => patch({ tags })} />
             <Errors items={grouped.tags} />
           </fieldset>
 
           <fieldset>
             <legend>source</legend>
+            <Help id="source" />
             <SourceSelect source={form.source} onChange={(source) => patch({ source })} />
             <Errors items={grouped.source} />
           </fieldset>

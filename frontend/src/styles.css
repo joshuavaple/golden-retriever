@@ -122,7 +122,8 @@ button:hover { background: color-mix(in srgb, var(--gold) 38%, var(--gold-soft))
 .primary:hover:not(:disabled) { background: color-mix(in srgb, var(--gold) 85%, white); }
 .primary:disabled { cursor: not-allowed; color: var(--muted); background: var(--gold-soft); box-shadow: none; }
 
-.help { margin: 0 0 0.5rem; font-size: 0.875rem; color: var(--muted); }
+.help { margin: 0 0 0.6rem; font-size: 0.875rem; color: var(--muted); }
+.help a { color: var(--gold-strong); font-weight: 700; white-space: nowrap; }
 .errors, .warnings {
   width: 100%;
   margin: 0.6rem 0 0;
