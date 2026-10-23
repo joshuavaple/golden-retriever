@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MLflow evaluation dataset record (Databricks MLflow 3 schema)",
+  "description": "One record of an MLflow evaluation dataset, as authored by the tool. Only `inputs` is required. Optional sections that are blank must be omitted entirely (no empty strings, lists or objects). Fields that MLflow assigns itself (dataset_record_id, create_time, created_by, last_update_time, last_updated_by) are not authored and are rejected here. A dataset file is a JSON array of these records.",
+  "type": "object",
+  "required": ["inputs"],
+  "additionalProperties": false,
+  "properties": {
+    "inputs": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "Inputs for the app under evaluation, as arbitrary JSON keys (typically `question`)."
+    },
+    "expectations": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "Ground-truth labels. Reserved keys are read by built-in judges and scorers; other keys are allowed by MLflow and are kept as-is.",
+      "properties": {
+        "expected_facts": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Read by the Correctness judge. Facts that must appear in a correct answer. List only facts that are strictly required.",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "expected_response": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Read by the Correctness judge. The exact or similar expected output."
+        },
+        "guidelines": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Read by the Guidelines judge. Natural-language rules the answer must follow.",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "expected_retrieved_context": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Read by the document_recall scorer. Documents or passages that should be retrieved.",
+          "items": { "$ref": "#/definitions/retrieved_context" }
+        }
+      }
+    },
+    "tags": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "Key-value tags for the record. Any JSON value is allowed."
+    },
+    "source": {
+      "description": "Where the record came from: exactly one of human, document, or trace.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["human"],
+          "additionalProperties": false,
+          "properties": {
+            "human": {
+              "type": "object",
+              "required": ["user_name"],
+              "additionalProperties": false,
+              "properties": { "user_name": { "type": "string", "minLength": 1 } }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["document"],
+          "additionalProperties": false,
+          "properties": {
+            "document": {
+              "type": "object",
+              "required": ["doc_uri"],
+              "additionalProperties": false,
+              "properties": {
+                "doc_uri": { "type": "string", "minLength": 1 },
+                "content": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["trace"],
+          "additionalProperties": false,
+          "properties": {
+            "trace": {
+              "type": "object",
+              "required": ["trace_id"],
+              "additionalProperties": false,
+              "properties": { "trace_id": { "type": "string", "minLength": 1 } }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "retrieved_context": {
+      "type": "object",
+      "required": ["doc_uri"],
+      "additionalProperties": false,
+      "properties": {
+        "doc_uri": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique identifier (URI or path) of the source document."
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The retrieved passage, entered as Markdown."
+        }
+      }
+    }
+  }
+}
