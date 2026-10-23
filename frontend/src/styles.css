@@ -51,8 +51,8 @@ h1 {
 }
 .paw { width: 1.9rem; height: 1.9rem; fill: var(--gold); }
 h3, h4 { margin: 1rem 0 0.25rem; font-weight: 700; }
-h3 { font-size: 1.05rem; margin: 0; }
-h4 { font-size: 0.95rem; }
+h3 { font-size: 1.25rem; margin: 0; }
+h4 { font-size: 1rem; }
 h4:first-of-type { margin-top: 0.25rem; }
 
 fieldset {
@@ -64,9 +64,9 @@ fieldset {
   box-shadow: var(--shadow);
 }
 /* float lifts the legend off the border so the heading sits inside the box */
-legend { float: left; width: 100%; padding: 0; margin: 0 0 0.6rem; font-weight: 800; font-size: 1.05rem; }
+legend { float: left; width: 100%; padding: 0; margin: 0 0 0.6rem; font-weight: 800; font-size: 1.4rem; line-height: 1.3; }
 legend + * { clear: both; }
-legend small { font-weight: 400; color: var(--muted); }
+legend small { font-size: 0.875rem; font-weight: 400; color: var(--muted); }
 
 .rows { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start; }
 .row { display: flex; gap: 0.5rem; width: 100%; align-items: flex-start; }

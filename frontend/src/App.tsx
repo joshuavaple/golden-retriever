@@ -76,6 +76,12 @@ export function App() {
           <fieldset>
             <legend>expectations</legend>
             <Help id="expectations" />
+            <h4>expected_retrieved_context</h4>
+            <Help id="expected_retrieved_context" />
+            <ContextItems items={form.expected_retrieved_context} onChange={(expected_retrieved_context) => {
+              if (expected_retrieved_context.length < form.expected_retrieved_context.length) setActiveCtx(null);
+              patch({ expected_retrieved_context });
+            }} />
             <h4>expected_facts</h4>
             <Help id="expected_facts" />
             <StringListRows label="fact" items={form.expected_facts} onChange={(expected_facts) => patch({ expected_facts })} />
@@ -85,12 +91,6 @@ export function App() {
             <h4>guidelines</h4>
             <Help id="guidelines" />
             <StringListRows label="guideline" items={form.guidelines} onChange={(guidelines) => patch({ guidelines })} />
-            <h4>expected_retrieved_context</h4>
-            <Help id="expected_retrieved_context" />
-            <ContextItems items={form.expected_retrieved_context} onChange={(expected_retrieved_context) => {
-              if (expected_retrieved_context.length < form.expected_retrieved_context.length) setActiveCtx(null);
-              patch({ expected_retrieved_context });
-            }} />
             <Errors items={grouped.expectations} />
           </fieldset>
 
