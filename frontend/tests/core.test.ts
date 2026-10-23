@@ -43,6 +43,7 @@ describe('serialize', () => {
   const filled = (): FormState => {
     const f = emptyForm();
     f.inputs[0].value = minimal.inputs.question;
+    f.source.kind = 'none';
     return f;
   };
 
@@ -79,6 +80,17 @@ describe('serialize', () => {
     const f = filled();
     f.source.kind = 'trace';
     expect(validateRecord(serialize(f)).length).toBeGreaterThan(0);
+  });
+});
+
+describe('defaults', () => {
+  it('starts with a human source, which is invalid until user_name is filled', () => {
+    const f = emptyForm();
+    f.inputs[0].value = 'q';
+    expect(f.source.kind).toBe('human');
+    expect(validateRecord(serialize(f)).length).toBeGreaterThan(0);
+    f.source.user_name = 'jane.doe@example.com';
+    expect(validateRecord(serialize(f))).toEqual([]);
   });
 });
 

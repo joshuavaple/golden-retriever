@@ -74,7 +74,7 @@ Full record:
 
 ## 3. Unverified (confirm, don't assume)
 
-1. The `{doc_uri, content}` item structure of `expected_retrieved_context`. The Databricks page doesn't spell it out; it comes from the older Agent Evaluation schema, where `doc_uri` is required and `content` optional. The schema follows that.
+1. The `{doc_uri, content}` item structure of `expected_retrieved_context`. **Largely resolved, not fully.** The dataset reference page doesn't spell it out, but Databricks' [synthetic evaluation set page](https://docs.databricks.com/aws/en/agents/agent-evaluation/synthesize-evaluation-set) says the generated `expected_retrieved_context` is "the context this evaluation has been synthesized from, including the document content and the doc_uri", and open-source MLflow types it as `list[dict[str, str]]` (`mlflow/genai/evaluation/utils.py`). Still unconfirmed: whether other keys are accepted, whether `doc_uri` is optional, and how the built-in `document_recall` scorer matches (the open-source MLflow docs example matches on `doc_uri`; the built-in scorer's source wasn't found). The schema keeps `doc_uri` required and `content` optional.
 2. Whether `expected_facts` and `expected_response` may coexist in one record. The older schema allowed only one. The tool warns but does not block.
 3. Whether `source` and `tags` are accepted when records are passed as plain dicts (for example to `merge_records` or `mlflow.genai.evaluate`) as opposed to being set through the Databricks UI. Check against the docs on a first real import.
 
@@ -85,7 +85,7 @@ A simple form to enter one record at a time:
 - **inputs:** key/value rows. A `question` row is pre-added. At least one key with a non-blank value is required.
 - **expectations:** the four reserved fields. `expected_facts` and `guidelines` as add/remove rows, one item per row. `expected_response` as a textarea. `expected_retrieved_context` as repeatable items, each with a single-line `doc_uri` and a multi-line monospaced `content` textarea where the user writes Markdown (an optional rendered-Markdown preview toggle is nice to have).
 - **tags:** key/value rows.
-- **source:** a selector (none / human / document / trace) that reveals the matching fields.
+- **source:** a selector (none / human / document / trace) that reveals the matching fields. Defaults to human, since the authors are people writing records by hand (the docs define human as "created manually by a person" and document as "synthesized from a document"). The `user_name` box hints at an email address.
 - Optional fields can be left blank and are omitted from the output (see "Blank means omitted").
 - Live validation against the schema file with inline errors. "Add record" stays disabled until the record is valid.
 - **Preview panel:** shows the exact JSON output, both for the record being edited and for the whole dataset array, with Copy and Download buttons.

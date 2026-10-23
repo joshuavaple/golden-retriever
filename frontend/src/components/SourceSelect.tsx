@@ -13,7 +13,7 @@ export function SourceSelect({ source, onChange }: Props) {
         {KINDS.map((k) => <option value={k}>{k}</option>)}
       </select>
       {source.kind !== 'none' && <Help id={`source_${source.kind}`} />}
-      {source.kind === 'human' && <input aria-label="user_name" placeholder="user_name" value={source.user_name} onInput={(e) => set({ user_name: e.currentTarget.value })} />}
+      {source.kind === 'human' && <input aria-label="user_name" placeholder="user_name (email, e.g. yourname@email.com)" value={source.user_name} onInput={(e) => set({ user_name: e.currentTarget.value })} />}
       {source.kind === 'trace' && <input aria-label="trace_id" placeholder="trace_id" value={source.trace_id} onInput={(e) => set({ trace_id: e.currentTarget.value })} />}
       {source.kind === 'document' && (
         <>

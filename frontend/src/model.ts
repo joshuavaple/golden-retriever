@@ -26,6 +26,6 @@ export function emptyForm(): FormState {
     guidelines: [],
     expected_retrieved_context: [],
     tags: [],
-    source: { kind: 'none', user_name: '', doc_uri: '', content: '', trace_id: '' },
+    source: { kind: 'human', user_name: '', doc_uri: '', content: '', trace_id: '' },
   };
 }

@@ -38,7 +38,8 @@ export function App() {
 
   const add = () => {
     setDataset((d) => [...d, record]);
-    setForm(emptyForm());
+    // The same person usually enters several records in a row, so keep their user_name.
+    setForm({ ...emptyForm(), source: form.source.kind === 'human' ? form.source : emptyForm().source });
   };
 
   return (
