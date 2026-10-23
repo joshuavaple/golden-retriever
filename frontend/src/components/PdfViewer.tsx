@@ -121,22 +121,20 @@ export function PdfViewer({ onAdd }: Props) {
 
   return (
     <section class="pdf">
-      <header class="bar">
+      <header class="bar pdf-head">
         <h3>{fileName || 'PDF'}</h3>
-        <span>
-          {doc && (
-            <>
-              <button type="button" onClick={fitWidth}>Fit width</button>
-              <button type="button" aria-label="Zoom out" onClick={() => setScale((s) => Math.max(0.6, +(s - 0.2).toFixed(1)))}>−</button>
-              <button type="button" aria-label="Zoom in" onClick={() => setScale((s) => Math.min(3, +(s + 0.2).toFixed(1)))}>+</button>
-            </>
-          )}
-          <label class="file-button">
-            {doc ? 'Open another' : 'Open PDF'}
-            <input type="file" accept="application/pdf" onChange={(e) => e.currentTarget.files?.[0] && open(e.currentTarget.files[0])} />
-          </label>
-        </span>
+        <label class="file-button">
+          {doc ? 'Open another' : 'Open PDF'}
+          <input type="file" accept="application/pdf" onChange={(e) => e.currentTarget.files?.[0] && open(e.currentTarget.files[0])} />
+        </label>
       </header>
+      {doc && (
+        <div class="pdf-tools">
+          <button type="button" onClick={fitWidth}>Fit width</button>
+          <button type="button" aria-label="Zoom out" onClick={() => setScale((s) => Math.max(0.6, +(s - 0.2).toFixed(1)))}>−</button>
+          <button type="button" aria-label="Zoom in" onClick={() => setScale((s) => Math.min(3, +(s + 0.2).toFixed(1)))}>+</button>
+        </div>
+      )}
       {error && <p class="errors" role="alert">{error}</p>}
       <div class="pdf-scroll" ref={scroller} onMouseUp={onMouseUp} onScroll={() => setPill(null)}>
         {doc ? (
