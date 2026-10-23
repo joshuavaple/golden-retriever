@@ -1,20 +1,20 @@
 :root {
-  --bg: #f3e7ce;
-  --surface: #fbf4e4;
-  --ink: #3a2b1c;
-  --muted: #7a6650;
-  --line: #e0cfae;
-  --gold: #d8a24a;
-  --gold-strong: #8f5f14;
-  --gold-soft: #f1dfb6;
+  --bg: #faf5e8;
+  --surface: #fffdf8;
+  --ink: #2a2016;
+  --muted: #6b5c48;
+  --line: #e6d8b8;
+  --gold: #e0a83c;
+  --gold-strong: #8a5a0c;
+  --gold-soft: #f7eac8;
   --code-bg: #2e2218;
   --code-ink: #f3e6ce;
   --err: #a63d2a;
-  --err-bg: #f8e3dc;
+  --err-bg: #fbe6df;
   --warn: #7a4e0e;
-  --warn-bg: #f6e6c0;
-  --btn-ink: #2e2218;
-  --shadow: 0 1px 2px rgb(90 60 20 / 0.08), 0 6px 18px rgb(90 60 20 / 0.06);
+  --warn-bg: #fbefc9;
+  --btn-ink: #2a1d0e;
+  --shadow: 0 1px 2px rgb(90 60 20 / 0.06), 0 4px 14px rgb(90 60 20 / 0.05);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
