@@ -1,3 +1,5 @@
 import { render } from 'preact';
+import { App } from './App';
+import './styles.css';
 
-render(<h1>golden-retriever</h1>, document.getElementById('app')!);
+render(<App />, document.getElementById('app')!);
