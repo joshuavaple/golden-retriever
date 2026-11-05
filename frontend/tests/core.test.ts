@@ -8,12 +8,16 @@ const minimal = { inputs: { question: 'How long do I have to request a refund on
 const full = {
   inputs: { question: 'How long do I have to request a refund on an annual plan?' },
   expectations: {
-    expected_facts: ['Annual plans have a 30-day refund window'],
+    expected_facts: ['Annual plans have a 30-day refund window', 'Refund requests are made from the account billing page'],
     guidelines: ['The response must cite the refund policy'],
     expected_retrieved_context: [
       {
         doc_uri: 's3://example-bucket/docs/refund-policy.md',
         content: '| Plan | Refund window |\n|---|---|\n| Annual | 30 days |\n| Monthly | none |',
+      },
+      {
+        doc_uri: 's3://example-bucket/docs/billing-faq.md',
+        content: 'To request a refund, open **Account > Billing** and choose **Request refund**.',
       },
     ],
   },
@@ -36,6 +40,23 @@ describe('schema', () => {
     ['MLflow-assigned field', { inputs: { q: 'x' }, create_time: 1 }],
   ])('rejects %s', (_name, record) => {
     expect(validateRecord(record).length).toBeGreaterThan(0);
+  });
+});
+
+describe('retrieved context', () => {
+  const withContexts = (contexts: unknown[]) => ({ inputs: { q: 'x' }, expectations: { expected_retrieved_context: contexts } });
+
+  it('accepts several items, each with its own doc_uri', () => {
+    expect(validateRecord(withContexts([{ doc_uri: 'a.pdf', content: 'one' }, { doc_uri: 'b.pdf', content: 'two' }]))).toEqual([]);
+  });
+
+  it('requires doc_uri on every item, even when other items have one', () => {
+    const errors = validateRecord(withContexts([{ doc_uri: 'a.pdf', content: 'one' }, { content: 'orphan passage' }]));
+    expect(errors.some((e) => e.path === '/expectations/expected_retrieved_context/1' && e.message.includes("'doc_uri'"))).toBe(true);
+  });
+
+  it('rejects an item whose doc_uri is blank', () => {
+    expect(validateRecord(withContexts([{ doc_uri: '', content: 'text' }])).length).toBeGreaterThan(0);
   });
 });
 
@@ -67,6 +88,20 @@ describe('serialize', () => {
     f.source.kind = 'human';
     f.source.user_name = 'jane.doe@example.com';
     expect(serialize(f)).toEqual(full);
+    expect(validateRecord(serialize(f))).toEqual([]);
+  });
+
+  it('keeps several contexts in order and flags one without a doc_uri', () => {
+    const f = filled();
+    f.expected_retrieved_context = [
+      { doc_uri: 'a.pdf', content: 'one' },
+      { doc_uri: '', content: 'orphan' },
+      { doc_uri: 'b.pdf', content: 'two' },
+    ];
+    const record = serialize(f);
+    expect((record.expectations as { expected_retrieved_context: unknown[] }).expected_retrieved_context).toHaveLength(3);
+    expect(validateRecord(record).length).toBeGreaterThan(0);
+    f.expected_retrieved_context[1].doc_uri = 'c.pdf';
     expect(validateRecord(serialize(f))).toEqual([]);
   });
 
