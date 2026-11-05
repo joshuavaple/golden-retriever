@@ -93,6 +93,7 @@ input, textarea, select {
   border-radius: 12px;
 }
 select { width: auto; }
+input[aria-invalid="true"] { border-color: var(--err); }
 input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.8; }
 input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--gold) 55%, transparent);
