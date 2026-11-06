@@ -8,6 +8,10 @@ export default defineConfig({
       '@spec': new URL('../spec', import.meta.url).pathname,
     },
   },
-  server: { fs: { allow: ['..'] } },
+  server: {
+    fs: { allow: ['..'] },
+    // The backend is a separate process (see backend/README.md); the frontend works without it.
+    proxy: { '/api': 'http://127.0.0.1:8000' },
+  },
   test: { include: ['tests/**/*.test.ts'] },
 });

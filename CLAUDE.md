@@ -6,7 +6,7 @@ Static web tool for hand-authoring MLflow 3 evaluation ("golden") datasets. Scop
 
 - `spec/mlflow_eval_record.schema.json`: JSON Schema for one record. Single source of truth for validation.
 - `frontend/`: Vite + Preact + TypeScript SPA (no backend).
-- `backend/`: empty, reserved for a possible local server.
+- `backend/`: Python (FastAPI + LangChain, Azure OpenAI) service for AI question and answer suggestions. Separate process from the frontend; see `backend/README.md`. The prompts live in `backend/config/question_prompts.yaml` and `answer_prompts.yaml`.
 
 ## Commands (run in `frontend/`)
 
@@ -14,6 +14,11 @@ Static web tool for hand-authoring MLflow 3 evaluation ("golden") datasets. Scop
 - `npm test`: Vitest
 - `npm run build`: `tsc --noEmit` + Vite build
 - Install with `npm install --legacy-peer-deps`. Plain `npm install` crashes with an npm peer-dependency error (`reading 'edgesOut'`).
+
+## Commands (run in `backend/`)
+
+- `uv sync`, then `uv run uvicorn app.main:app --reload --port 8000`: dev server (credentials in `backend/.env`, see `.env.example`)
+- `uv run pytest`: tests (fake model, no network)
 
 ## Conventions
 

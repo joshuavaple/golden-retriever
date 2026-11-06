@@ -220,3 +220,6 @@ body.resizing { user-select: none; cursor: col-resize; }
   white-space: nowrap;
 }
 .pdf-tools { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.5rem; }
+
+.suggest { margin-bottom: 0.5rem; }
+.suggest .errors { margin: 0.4rem 0 0; }
