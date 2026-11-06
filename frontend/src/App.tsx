@@ -12,7 +12,9 @@ import { Errors, Warnings } from './components/Messages';
 import { Help } from './components/Help';
 import { PdfViewer } from './components/PdfViewer';
 import { Splitter } from './components/Splitter';
+import { SuggestQuestion } from './components/SuggestQuestion';
 import { addToRetrievedContext } from './pdfSelection';
+import { applyQuestion, chunksFromForm } from './suggest';
 
 export function App() {
   const [form, setForm] = useState<FormState>(emptyForm);
@@ -22,6 +24,8 @@ export function App() {
   const [pdfWidth, setPdfWidth] = useState<number | null>(null);
   const pdfPane = useRef<HTMLDivElement>(null);
   const [activeCtx, setActiveCtx] = useState<number | null>(null);
+  // Questions the AI already suggested for the record being edited; reset when a record is added.
+  const [suggested, setSuggested] = useState<string[]>([]);
   const patch = (p: Partial<FormState>) => setForm((f) => ({ ...f, ...p }));
 
   const record = useMemo(() => serialize(form), [form]);
@@ -38,6 +42,7 @@ export function App() {
 
   const add = () => {
     setDataset((d) => [...d, record]);
+    setSuggested([]);
     // The same person usually enters several records in a row, so keep their user_name.
     setForm({ ...emptyForm(), source: form.source.kind === 'human' ? form.source : emptyForm().source });
   };
@@ -70,6 +75,14 @@ export function App() {
           <fieldset>
             <legend>inputs <small>(required; at least one key with a value)</small></legend>
             <Help id="inputs" />
+            <SuggestQuestion
+              chunks={chunksFromForm(form)}
+              previous={suggested}
+              onSuggest={(q) => {
+                setSuggested((s) => [...s, q]);
+                setForm((f) => applyQuestion(f, q));
+              }}
+            />
             <KeyValueRows label="input" rows={form.inputs} onChange={(inputs) => patch({ inputs })} />
             <Errors items={grouped.inputs} />
           </fieldset>
