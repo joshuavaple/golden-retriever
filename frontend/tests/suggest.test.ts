@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { applyQuestion, chunksFromForm, suggestQuestion } from '../src/suggest';
+import { applyAnswer, applyQuestion, chunksFromForm, questionFromForm, suggestAnswer, suggestQuestion } from '../src/suggest';
 import { emptyForm } from '../src/model';
 
 afterEach(() => vi.unstubAllGlobals());
@@ -58,5 +58,47 @@ describe('suggestQuestion', () => {
   it('explains a proxy error when the backend is down in dev (non-JSON 5xx)', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('', { status: 500 })));
     await expect(suggestQuestion([{ text: 't' }], [])).rejects.toThrow(/backend/i);
+  });
+});
+
+describe('questionFromForm', () => {
+  it('reads the trimmed value of the "question" input', () => {
+    const f = { ...emptyForm(), inputs: [{ key: 'lang', value: 'en' }, { key: 'question', value: '  Why?  ' }] };
+    expect(questionFromForm(f)).toBe('Why?');
+  });
+
+  it('is empty when there is no question row or it is blank', () => {
+    expect(questionFromForm(emptyForm())).toBe('');
+    expect(questionFromForm({ ...emptyForm(), inputs: [{ key: 'lang', value: 'en' }] })).toBe('');
+  });
+});
+
+describe('applyAnswer', () => {
+  it('replaces expected_response and leaves the rest alone', () => {
+    const base = { ...emptyForm(), expected_response: 'old', expected_facts: ['f'] };
+    const f = applyAnswer(base, 'new answer');
+    expect(f.expected_response).toBe('new answer');
+    expect(f.expected_facts).toEqual(['f']);
+  });
+});
+
+describe('suggestAnswer', () => {
+  it('posts the question and chunks and returns the answer', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ answer: 'A.' }), { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(suggestAnswer('Q?', [{ text: 't' }])).resolves.toBe('A.');
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe('/api/suggest-answer');
+    expect(JSON.parse(init.body)).toEqual({ question: 'Q?', chunks: [{ text: 't' }] });
+  });
+
+  it('surfaces the backend detail message on errors', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ detail: 'Model call failed: x' }), { status: 502 })));
+    await expect(suggestAnswer('Q?', [{ text: 't' }])).rejects.toThrow('Model call failed: x');
+  });
+
+  it('explains when the backend is not running', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+    await expect(suggestAnswer('Q?', [{ text: 't' }])).rejects.toThrow(/backend/i);
   });
 });

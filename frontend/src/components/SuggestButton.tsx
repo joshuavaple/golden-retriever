@@ -1,24 +1,26 @@
 import { useState } from 'preact/hooks';
-import type { Chunk } from '../suggest';
-import { suggestQuestion } from '../suggest';
 
 type Props = {
-  chunks: Chunk[];
-  /** Suggestions already made for this record; sent so a re-click asks something different. */
-  previous: string[];
-  onSuggest: (question: string) => void;
+  idleLabel: string;
+  repeatLabel: string;
+  /** Why the button is disabled; undefined means it can be clicked. */
+  disabledReason?: string;
+  /** True once a suggestion was made for this record, so the label offers to regenerate. */
+  repeated: boolean;
+  /** Fetches a suggestion; the caller applies it to the form. */
+  run: () => Promise<string>;
+  onResult: (text: string) => void;
 };
 
-export function SuggestQuestion({ chunks, previous, onSuggest }: Props) {
+export function SuggestButton({ idleLabel, repeatLabel, disabledReason, repeated, run, onResult }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const empty = chunks.length === 0;
 
-  const run = async () => {
+  const click = async () => {
     setBusy(true);
     setError(null);
     try {
-      onSuggest(await suggestQuestion(chunks, previous.slice(-5)));
+      onResult(await run());
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -28,8 +30,8 @@ export function SuggestQuestion({ chunks, previous, onSuggest }: Props) {
 
   return (
     <div class="suggest">
-      <button type="button" onClick={run} disabled={empty || busy} title={empty ? 'Add passages from the PDF first' : undefined}>
-        {busy ? 'Thinking…' : previous.length ? '↻ Regenerate question' : '✨ Suggest question'}
+      <button type="button" onClick={click} disabled={!!disabledReason || busy} title={disabledReason}>
+        {busy ? 'Thinking…' : repeated ? repeatLabel : idleLabel}
       </button>
       {error && <p class="errors" role="alert">{error}</p>}
     </div>

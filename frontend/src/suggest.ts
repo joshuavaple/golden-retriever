@@ -18,30 +18,38 @@ export function applyQuestion(form: FormState, question: string): FormState {
   return { ...form, inputs };
 }
 
-export async function suggestQuestion(chunks: Chunk[], previousQuestions: string[], signal?: AbortSignal): Promise<string> {
+/** Puts the suggestion in expected_response. */
+export const applyAnswer = (form: FormState, answer: string): FormState => ({ ...form, expected_response: answer });
+
+/** The question the answer is written for: the trimmed `question` input. */
+export const questionFromForm = (form: FormState): string => (form.inputs.find((r) => r.key === 'question')?.value ?? '').trim();
+
+async function post<T>(path: string, body: unknown, pick: (r: Partial<T>) => string | undefined, signal?: AbortSignal): Promise<string> {
   let res: Response;
   try {
-    res = await fetch('/api/suggest-question', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ chunks, previous_questions: previousQuestions }),
-      signal,
-    });
+    res = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal });
   } catch (e) {
     if (e instanceof DOMException && e.name === 'AbortError') throw e;
     throw new Error(NO_BACKEND);
   }
-  let body: { question?: string; detail?: unknown } | null = null;
+  let json: (Partial<T> & { detail?: unknown }) | null = null;
   try {
-    body = await res.json();
+    json = await res.json();
   } catch {
     // not JSON: the dev proxy answers like this when nothing is listening
   }
   if (!res.ok) {
-    if (typeof body?.detail === 'string') throw new Error(body.detail);
-    if (body === null) throw new Error(NO_BACKEND);
+    if (typeof json?.detail === 'string') throw new Error(json.detail);
+    if (json === null) throw new Error(NO_BACKEND);
     throw new Error(`Suggestion request was rejected (HTTP ${res.status}).`);
   }
-  if (!body?.question) throw new Error('The backend returned no question.');
-  return body.question;
+  const text = json && pick(json);
+  if (!text) throw new Error('The backend returned an empty suggestion.');
+  return text;
 }
+
+export const suggestQuestion = (chunks: Chunk[], previousQuestions: string[], signal?: AbortSignal) =>
+  post<{ question: string }>('/api/suggest-question', { chunks, previous_questions: previousQuestions }, (r) => r.question, signal);
+
+export const suggestAnswer = (question: string, chunks: Chunk[], signal?: AbortSignal) =>
+  post<{ answer: string }>('/api/suggest-answer', { question, chunks }, (r) => r.answer, signal);
