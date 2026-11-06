@@ -2,33 +2,39 @@ from pathlib import Path
 
 import pytest
 
-from app.prompts import Prompts, load_prompts
+from app.prompts import ANSWER_PLACEHOLDERS, QUESTION_PLACEHOLDERS, Prompts, load_prompts
 
-REAL = Path(__file__).parent.parent / "config" / "prompts.yaml"
+CONFIG = Path(__file__).parent.parent / "config"
 
 
-def test_real_config_loads_with_required_placeholders():
-    p = load_prompts(REAL)
+@pytest.mark.parametrize("name,placeholders", [("question_prompts.yaml", QUESTION_PLACEHOLDERS), ("answer_prompts.yaml", ANSWER_PLACEHOLDERS)])
+def test_real_configs_load_with_their_placeholders(name, placeholders):
+    p = load_prompts(CONFIG / name, placeholders)
     assert p.system.strip()
-    assert "{chunks}" in p.user
-    assert "{previous_questions}" in p.user
+    for ph in placeholders:
+        assert "{" + ph + "}" in p.user
+
+
+def test_question_and_answer_placeholders_differ():
+    assert "previous_questions" in QUESTION_PLACEHOLDERS and "question" in ANSWER_PLACEHOLDERS
+    assert "previous_questions" not in ANSWER_PLACEHOLDERS
 
 
 def test_temperature_is_optional(tmp_path):
     f = tmp_path / "p.yaml"
-    f.write_text("system: s\nuser: '{chunks} {previous_questions}'\n")
-    assert load_prompts(f) == Prompts(system="s", user="{chunks} {previous_questions}", temperature=None)
+    f.write_text("system: s\nuser: '{chunks}'\n")
+    assert load_prompts(f, ("chunks",)) == Prompts(system="s", user="{chunks}", temperature=None)
 
 
 def test_missing_key_is_reported(tmp_path):
     f = tmp_path / "p.yaml"
     f.write_text("system: s\n")
     with pytest.raises(ValueError, match="user"):
-        load_prompts(f)
+        load_prompts(f, ("chunks",))
 
 
-def test_user_template_without_chunks_placeholder_is_rejected(tmp_path):
+def test_user_template_missing_a_required_placeholder_is_rejected(tmp_path):
     f = tmp_path / "p.yaml"
-    f.write_text("system: s\nuser: no placeholders here\n")
-    with pytest.raises(ValueError, match="chunks"):
-        load_prompts(f)
+    f.write_text("system: s\nuser: '{chunks}'\n")
+    with pytest.raises(ValueError, match="question"):
+        load_prompts(f, ("chunks", "question"))

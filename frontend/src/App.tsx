@@ -12,9 +12,9 @@ import { Errors, Warnings } from './components/Messages';
 import { Help } from './components/Help';
 import { PdfViewer } from './components/PdfViewer';
 import { Splitter } from './components/Splitter';
-import { SuggestQuestion } from './components/SuggestQuestion';
+import { SuggestButton } from './components/SuggestButton';
 import { addToRetrievedContext } from './pdfSelection';
-import { applyQuestion, chunksFromForm } from './suggest';
+import { applyAnswer, applyQuestion, chunksFromForm, questionFromForm, suggestAnswer, suggestQuestion } from './suggest';
 
 export function App() {
   const [form, setForm] = useState<FormState>(emptyForm);
@@ -26,8 +26,11 @@ export function App() {
   const [activeCtx, setActiveCtx] = useState<number | null>(null);
   // Questions the AI already suggested for the record being edited; reset when a record is added.
   const [suggested, setSuggested] = useState<string[]>([]);
+  const [answerSuggested, setAnswerSuggested] = useState(false);
   const patch = (p: Partial<FormState>) => setForm((f) => ({ ...f, ...p }));
 
+  const chunks = chunksFromForm(form);
+  const question = questionFromForm(form);
   const record = useMemo(() => serialize(form), [form]);
   const errors = useMemo(() => validateRecord(record), [record]);
   const grouped = groupErrors(errors, form.source.kind);
@@ -43,6 +46,7 @@ export function App() {
   const add = () => {
     setDataset((d) => [...d, record]);
     setSuggested([]);
+    setAnswerSuggested(false);
     // The same person usually enters several records in a row, so keep their user_name.
     setForm({ ...emptyForm(), source: form.source.kind === 'human' ? form.source : emptyForm().source });
   };
@@ -75,10 +79,13 @@ export function App() {
           <fieldset>
             <legend>inputs <small>(required; at least one key with a value)</small></legend>
             <Help id="inputs" />
-            <SuggestQuestion
-              chunks={chunksFromForm(form)}
-              previous={suggested}
-              onSuggest={(q) => {
+            <SuggestButton
+              idleLabel="✨ Suggest question"
+              repeatLabel="↻ Regenerate question"
+              disabledReason={chunks.length ? undefined : 'Add passages from the PDF first'}
+              repeated={suggested.length > 0}
+              run={() => suggestQuestion(chunks, suggested.slice(-5))}
+              onResult={(q) => {
                 setSuggested((s) => [...s, q]);
                 setForm((f) => applyQuestion(f, q));
               }}
@@ -101,6 +108,17 @@ export function App() {
             <StringListRows label="fact" items={form.expected_facts} onChange={(expected_facts) => patch({ expected_facts })} />
             <h4>expected_response</h4>
             <Help id="expected_response" />
+            <SuggestButton
+              idleLabel="✨ Suggest answer"
+              repeatLabel="↻ Regenerate answer"
+              disabledReason={!chunks.length ? 'Add passages from the PDF first' : !question ? 'Write or suggest a question first' : undefined}
+              repeated={answerSuggested}
+              run={() => suggestAnswer(question, chunks)}
+              onResult={(a) => {
+                setAnswerSuggested(true);
+                setForm((f) => applyAnswer(f, a));
+              }}
+            />
             <textarea aria-label="expected_response" rows={3} value={form.expected_response} onInput={(e) => patch({ expected_response: e.currentTarget.value })} />
             <h4>guidelines</h4>
             <Help id="guidelines" />

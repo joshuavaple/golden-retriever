@@ -6,7 +6,7 @@ Static web tool for hand-authoring MLflow 3 evaluation ("golden") datasets. Scop
 
 - `spec/mlflow_eval_record.schema.json`: JSON Schema for one record. Single source of truth for validation.
 - `frontend/`: Vite + Preact + TypeScript SPA (no backend).
-- `backend/`: Python (FastAPI + LangChain, Azure OpenAI) service for AI question suggestions. Separate process from the frontend; see `backend/README.md`. The system prompt lives in `backend/config/prompts.yaml`.
+- `backend/`: Python (FastAPI + LangChain, Azure OpenAI) service for AI question and answer suggestions. Separate process from the frontend; see `backend/README.md`. The prompts live in `backend/config/question_prompts.yaml` and `answer_prompts.yaml`.
 
 ## Commands (run in `frontend/`)
 
