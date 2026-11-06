@@ -20,3 +20,19 @@ class SuggestQuestionRequest(BaseModel):
 
 class SuggestQuestionResponse(BaseModel):
     question: str
+
+
+class SuggestAnswerRequest(BaseModel):
+    question: str = Field(max_length=5_000)
+    chunks: list[Chunk] = Field(min_length=1, max_length=30)
+
+    @field_validator("question")
+    @classmethod
+    def _question_not_blank(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("question must not be blank")
+        return v.strip()
+
+
+class SuggestAnswerResponse(BaseModel):
+    answer: str

@@ -19,7 +19,8 @@ class Settings(BaseSettings):
     azure_openai_deployment: str | None = None
     azure_openai_api_version: str = "2024-10-21"
 
-    prompts_path: Path = BACKEND_DIR / "config" / "prompts.yaml"
+    question_prompts_path: Path = BACKEND_DIR / "config" / "question_prompts.yaml"
+    answer_prompts_path: Path = BACKEND_DIR / "config" / "answer_prompts.yaml"
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
     def require_azure(self) -> None:
