@@ -23,3 +23,8 @@ Static web tool for hand-authoring MLflow 3 evaluation ("golden") datasets. Scop
 - Don't invent MLflow or Databricks behavior. Unresolved points are listed in section 3 of the handoff; say how you checked if you resolve one.
 - Ask before adding dependencies.
 - The owner is a senior ML/MLOps engineer: keep replies concise and explain design choices briefly.
+
+## Gotchas
+
+- Preact 11 does not add `px` to numeric inline styles: `style={{ width: 612 }}` is silently ignored. Always pass strings with units (`` `${n}px` ``), including custom properties.
+- The PDF viewer (`src/components/PdfViewer.tsx`, `src/pdf.ts`) depends on `TextLayerBuilder` from `pdfjs-dist/web/pdf_viewer.mjs` (not the bare `TextLayer`) for drag selection to match a native reader. `pdf_viewer.mjs` reads `globalThis.pdfjsLib`, so `src/pdf.ts` sets that before the dynamic import. The canvas renders at `devicePixelRatio` and is sized in CSS px; the text layer needs `--total-scale-factor` on the page element.
